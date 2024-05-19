@@ -32,15 +32,12 @@ Ini adalah Layered Architecture kalau dilihat secara struktur partisinya
 - GoFiber (HTTP Framework) : https://github.com/gofiber/fiber
 - GORM (ORM) : https://github.com/go-gorm/gorm
 - Viper (Configuration) : https://github.com/spf13/viper
-- Golang Migrate (Database Migration) : https://github.com/golang-migrate/migrate
+- Go Migrate (Database Migration) : https://github.com/golang-migrate/migrate
 - Go Playground Validator (Validation) : https://github.com/go-playground/validator
 - Logrus (Logger) : https://github.com/sirupsen/logrus
-- Golang Confluent Kafka : https://github.com/segmentio/kafka-go
-- Golang Redis : https://github.com/redis/go-redis
-- Golang JWT : https://pkg.go.dev/github.com/golang-jwt/jwt/v5#section-readme
-- Golang Minio : https://pkg.go.dev/github.com/minio/minio-go/v7#section-readme
-- Golang Oauth2 : https://pkg.go.dev/golang.org/x/oauth2#section-readme
-- Golang Elasticsearch v8 : https://pkg.go.dev/github.com/elastic/go-elasticsearch/v8#section-readme
+- Go Midtrans : https://github.com/veritrans/go-midtrans
+- Go JWT : https://pkg.go.dev/github.com/golang-jwt/jwt/v5#section-readme
+- Go Minio : https://pkg.go.dev/github.com/minio/minio-go/v7#section-readme
 
 # Erd
 
