@@ -61,6 +61,10 @@ type GetUserRequest struct {
 	ID string `json:"-" validate:"required,max=100,uuid"`
 }
 
+type GetUserByEmailRequest struct {
+	Email string `json:"-" validate:"required,email,max=255"`
+}
+
 type DeleteUserRequest struct {
 	ID string `json:"-" validate:"required,max=100,uuid"`
 }

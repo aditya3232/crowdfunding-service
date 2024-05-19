@@ -2,6 +2,7 @@ package route
 
 import (
 	"crowdfunding-service/internal/delivery/http"
+	"crowdfunding-service/internal/delivery/http/middleware"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,14 +10,17 @@ import (
 )
 
 type RouteConfig struct {
-	App            *fiber.App
-	Log            *logrus.Logger
-	UserController *http.UserController
+	App              *fiber.App
+	Log              *logrus.Logger
+	Oauth2Middleware *middleware.Oauth2Middleware
+	UserController   *http.UserController
+	Oauth2Controller *http.Oauth2Controller
 }
 
 func (c *RouteConfig) Setup() {
 	c.App.Use(c.recoverPanic)
 	c.SetupGuestRoute()
+	c.SetupAuthRoute()
 }
 
 func (c *RouteConfig) recoverPanic(ctx *fiber.Ctx) error {
@@ -36,9 +40,22 @@ func (c *RouteConfig) recoverPanic(ctx *fiber.Ctx) error {
 func (c *RouteConfig) SetupGuestRoute() {
 	GuestGroup := c.App.Group("/api")
 
-	GuestGroup.Get("/users", c.UserController.List)
 	GuestGroup.Post("/users", c.UserController.RegisterUser)
-	GuestGroup.Put("/users/:userId", c.UserController.Update)
-	GuestGroup.Get("/users/:userId", c.UserController.Get)
-	GuestGroup.Delete("/users/:userId", c.UserController.Delete)
+
+	GuestGroup.Get("/google/login", c.Oauth2Controller.GoogleLogin)
+	GuestGroup.Get("/google/callback", c.Oauth2Controller.GoogleCallback)
+	GuestGroup.Post("/google/revoke", c.Oauth2Controller.RevokeToken)
+	GuestGroup.Post("/google/refresh", c.Oauth2Controller.RefreshToken)
+}
+
+func (c *RouteConfig) SetupAuthRoute() {
+	AuthGroup := c.App.Group("/api")
+	AuthGroup.Use(c.Oauth2Middleware.Oauth2Middleware)
+
+	AuthGroup.Get("/users", c.UserController.List)
+	AuthGroup.Get("/users/me", c.UserController.CurrentUser)
+	AuthGroup.Put("/users/:userId", c.UserController.Update)
+	AuthGroup.Get("/users/:userId", c.UserController.Get)
+	AuthGroup.Delete("/users/:userId", c.UserController.Delete)
+
 }

@@ -35,6 +35,10 @@ func (r *UserRepository) FindByName(db *gorm.DB, user *entity.User, name string)
 	return db.Where("name = ?", name).Take(user).Error
 }
 
+func (r *UserRepository) FindByEmail(db *gorm.DB, user *entity.User, email string) error {
+	return db.Where("email = ?", email).Take(user).Error
+}
+
 func (r *UserRepository) Search(db *gorm.DB, request *model.SearchUserRequest) ([]entity.User, int64, error) {
 	var users []entity.User
 	if err := db.Scopes(r.FilterUser(request)).Offset((request.Page - 1) * request.Size).Limit(request.Size).Find(&users).Error; err != nil {

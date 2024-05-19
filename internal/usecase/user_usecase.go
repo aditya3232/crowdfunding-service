@@ -154,6 +154,30 @@ func (u *UserUseCase) Get(ctx context.Context, request *model.GetUserRequest) (*
 	return converter.UserToResponse(user), nil
 }
 
+// get by email
+func (u *UserUseCase) GetByEmail(ctx context.Context, request *model.GetUserByEmailRequest) (*model.UserResponse, error) {
+	tx := u.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := u.Validate.Struct(request); err != nil {
+		u.Log.WithError(err).Error("error validating request body")
+		return nil, fiber.ErrBadRequest
+	}
+
+	user := new(entity.User)
+	if err := u.UserRepository.FindByEmail(tx, user, request.Email); err != nil {
+		u.Log.WithError(err).Error("error finding user")
+		return nil, fiber.ErrNotFound
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Log.WithError(err).Error("error committing transaction")
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return converter.UserToResponse(user), nil
+}
+
 func (u *UserUseCase) Delete(ctx context.Context, request *model.DeleteUserRequest) error {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()

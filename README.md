@@ -33,7 +33,7 @@ Ini adalah Layered Architecture kalau dilihat secara struktur partisinya
 - Go Playground Validator (Validation) : https://github.com/go-playground/validator
 - Logrus (Logger) : https://github.com/sirupsen/logrus
 - Go Midtrans : https://github.com/veritrans/go-midtrans
-- Go JWT : https://pkg.go.dev/github.com/golang-jwt/jwt/v5#section-readme
+- Go Oauth2 : https://pkg.go.dev/golang.org/x/oauth2#section-readme
 - Go Minio : https://pkg.go.dev/github.com/minio/minio-go/v7#section-readme
 
 # Erd

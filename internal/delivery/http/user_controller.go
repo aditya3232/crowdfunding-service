@@ -1,6 +1,7 @@
 package http
 
 import (
+	"crowdfunding-service/internal/delivery/http/middleware"
 	"crowdfunding-service/internal/model"
 	"crowdfunding-service/internal/usecase"
 	"math"
@@ -111,4 +112,20 @@ func (c *UserController) Delete(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(model.WebResponse[bool]{Data: true})
+}
+
+func (c *UserController) CurrentUser(ctx *fiber.Ctx) error {
+	auth := middleware.GetUser(ctx)
+
+	request := &model.GetUserByEmailRequest{
+		Email: auth.Email,
+	}
+
+	response, err := c.UseCase.GetByEmail(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.WithError(err).Error("error getting current user")
+		return err
+	}
+
+	return ctx.JSON(model.WebResponse[*model.UserResponse]{Data: response})
 }
