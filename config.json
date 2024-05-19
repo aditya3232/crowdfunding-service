@@ -1,0 +1,36 @@
+{
+  "app": {
+    "name": "crowdfunding-service"
+  },
+  "web": {
+    "prefork": false,
+    "port": 2024
+  },
+  "log": {
+    "level": 6
+  },
+  "database": {
+    "username": "root",
+    "password": "root",
+    "host": "localhost",
+    "port": 3306,
+    "name": "crowdfunding_db",
+    "pool": {
+      "idle": 10,
+      "max": 100,
+      "lifetime": 300
+    }
+  },
+  "minio": {
+    "servers": "localhost:9000",
+    "accessKey": "crowdfunding-key",
+    "secret": "password",
+    "bucket": "crowdfunding",
+    "useSSL": false,
+    "objectUrl": "http://localhost:9000"
+  },
+  "jwt": {
+    "exp": "1h",
+    "secret": "secret"
+  }
+}

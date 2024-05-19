@@ -22,10 +22,7 @@ Ini adalah Layered Architecture kalau dilihat secara struktur partisinya
 
 - Golang : https://github.com/golang/go
 - MySQL : https://github.com/mysql/mysql-server
-- Apache Kafka : https://github.com/apache/kafka
-- Redis : https://github.com/redis/redis
 - Minio : https://github.com/minio/minio
-- Elasticsearch : https://github.com/elastic/elasticsearch
 
 ## Framework & Library
 
