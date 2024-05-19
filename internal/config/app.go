@@ -6,6 +6,7 @@ import (
 	"crowdfunding-service/internal/delivery/http/middleware"
 	"crowdfunding-service/internal/delivery/http/route"
 	set_service "crowdfunding-service/internal/gateway/api-calling"
+	object_storing "crowdfunding-service/internal/gateway/object-storing"
 	"crowdfunding-service/internal/repository"
 	"crowdfunding-service/internal/usecase"
 
@@ -36,9 +37,13 @@ func Bootstrap(config *BootstrapConfig) {
 	GetOauth2GoogleService := get_service.NewGetOauth2GoogleService(config.Log, config.Config)
 	SetOauth2GoogleService := set_service.NewSetOauth2GoogleService(config.Log, config.Config)
 
+	// store objects
+	objectStore := object_storing.NewUserObject(config.ObjectStore, config.Config, config.Log)
+
 	// usecases
 	oauth2UseCase := usecase.NewOauth2UseCase(config.DB, config.Log, config.Validate, config.Config, userRepository, config.Oauth2, GetOauth2GoogleService, SetOauth2GoogleService)
-	userUseCase := usecase.NewUserUseCase(config.DB, config.Log, config.Validate, userRepository)
+	storeObjectUseCase := usecase.NewStoreObjectUseCase(config.Log)
+	userUseCase := usecase.NewUserUseCase(config.DB, config.Log, config.Validate, userRepository, storeObjectUseCase, objectStore)
 
 	// controllers
 	oauth2Controller := http.NewOauth2Controller(oauth2UseCase, config.Log)

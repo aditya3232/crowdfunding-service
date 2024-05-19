@@ -129,3 +129,29 @@ func (c *UserController) CurrentUser(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(model.WebResponse[*model.UserResponse]{Data: response})
 }
+
+func (c *UserController) UpdateAvatar(ctx *fiber.Ctx) error {
+	request := new(model.UpdateAvatarRequest)
+	if err := ctx.BodyParser(request); err != nil {
+		c.Log.WithError(err).Error("error parsing request body")
+		return fiber.ErrBadRequest
+	}
+
+	request.ID = ctx.Params("userId")
+
+	file, err := ctx.FormFile("upload_avatar")
+	if err != nil {
+		c.Log.WithError(err).Error("error getting file")
+		return fiber.ErrBadRequest
+	}
+
+	request.Avatar = file
+
+	response, err := c.UseCase.UpdateAvatar(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.WithError(err).Error("error updating avatar")
+		return err
+	}
+
+	return ctx.JSON(model.WebResponse[*model.UserResponse]{Data: response})
+}

@@ -55,6 +55,7 @@ func (c *RouteConfig) SetupAuthRoute() {
 	AuthGroup.Get("/users", c.UserController.List)
 	AuthGroup.Get("/users/me", c.UserController.CurrentUser)
 	AuthGroup.Put("/users/:userId", c.UserController.Update)
+	AuthGroup.Put("/users/:userId/avatar", c.UserController.UpdateAvatar)
 	AuthGroup.Get("/users/:userId", c.UserController.Get)
 	AuthGroup.Delete("/users/:userId", c.UserController.Delete)
 
