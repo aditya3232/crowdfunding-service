@@ -179,6 +179,10 @@ func (u *UserUseCase) GetByEmail(ctx context.Context, request *model.GetUserByEm
 		return nil, fiber.ErrNotFound
 	}
 
+	if user.AvatarFileName != "" {
+		user.AvatarFileName = u.UserObject.GetURLObject(user.AvatarFileName)
+	}
+
 	if err := tx.Commit().Error; err != nil {
 		u.Log.WithError(err).Error("error committing transaction")
 		return nil, fiber.ErrInternalServerError
@@ -302,6 +306,11 @@ func (u *UserUseCase) UpdateAvatar(ctx context.Context, request *model.UpdateAva
 			u.Log.WithError(err).Error("error storing object")
 			return nil, fiber.ErrInternalServerError
 		}
+	}
+
+	// menampilkan url untuk response
+	if user.AvatarFileName != "" {
+		user.AvatarFileName = u.UserObject.GetURLObject(user.AvatarFileName)
 	}
 
 	return converter.UserToResponse(user), nil
