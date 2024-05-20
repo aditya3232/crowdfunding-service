@@ -86,3 +86,21 @@ func (c *CampaignController) Get(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(model.WebResponse[*model.CampaignResponse]{Data: response})
 }
+
+func (c *CampaignController) Update(ctx *fiber.Ctx) error {
+	request := new(model.UpdateCampaignRequest)
+	if err := ctx.BodyParser(request); err != nil {
+		c.Log.WithError(err).Error("error parsing request body")
+		return fiber.ErrBadRequest
+	}
+
+	request.ID = ctx.Params("campaignId")
+
+	response, err := c.UseCase.Update(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.WithError(err).Error("error updating campaign")
+		return err
+	}
+
+	return ctx.JSON(model.WebResponse[*model.CampaignResponse]{Data: response})
+}

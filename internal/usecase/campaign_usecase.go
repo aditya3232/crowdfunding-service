@@ -81,6 +81,52 @@ func (u *CampaignUseCase) Create(ctx context.Context, request *model.CreateCampa
 
 }
 
+func (u *CampaignUseCase) Update(ctx context.Context, request *model.UpdateCampaignRequest) (*model.CampaignResponse, error) {
+	tx := u.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := u.Validate.Struct(request); err != nil {
+		u.Log.WithError(err).Error("error validating request body")
+		return nil, fiber.ErrBadRequest
+	}
+
+	// pengecekan campaign id
+	campaign := new(entity.Campaign)
+	if err := u.CampaignRepository.FindById(tx, campaign, request.ID); err != nil {
+		u.Log.WithError(err).Error("error finding campaign")
+		return nil, fiber.ErrNotFound
+	}
+
+	// menampilkan response user
+	user := new(entity.User)
+	if err := u.UserRepository.FindById(tx, user, campaign.UserID); err != nil {
+		u.Log.WithError(err).Error("error finding user")
+		return nil, fiber.ErrBadRequest
+	}
+
+	campaign.Name = request.Name
+	campaign.ShortDescription = request.ShortDescription
+	campaign.Description = request.Description
+	campaign.Perks = request.Perks
+	campaign.GoalAmount = request.GoalAmount
+
+	if err := u.CampaignRepository.Update(tx, campaign); err != nil {
+		u.Log.WithError(err).Error("error updating campaign")
+		return nil, fiber.ErrInternalServerError
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Log.WithError(err).Error("error committing transaction")
+		return nil, fiber.ErrInternalServerError
+	}
+
+	// add response user
+	campaign.User = *user
+
+	return converter.CampaignToResponse(campaign), nil
+
+}
+
 func (u *CampaignUseCase) Get(ctx context.Context, request *model.GetCampaignRequest) (*model.CampaignResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
