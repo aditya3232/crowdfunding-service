@@ -19,6 +19,11 @@ func NewCampaignImageRepository(log *logrus.Logger) *CampaignImageRepository {
 }
 
 // mark all campaign image as non primary
-func (r *CampaignImageRepository) MarkAllAsNonPrimary(db *gorm.DB, campaignID string) error {
-	return db.Model(new(entity.CampaignImage)).Where("campaign_id = ?", campaignID).Update("is_primary", false).Error
+// is_primary = false (artinya bukan 0, ya 1)
+func (r *CampaignImageRepository) MarkAllAsNonPrimary(db *gorm.DB, campaignImage *entity.CampaignImage, campaignID string) (bool, error) {
+	if err := db.Model(campaignImage).Where("campaign_id = ?", campaignID).Update("is_primary", false).Error; err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

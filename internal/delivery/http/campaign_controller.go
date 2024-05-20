@@ -24,6 +24,7 @@ func NewCampaignController(useCase *usecase.CampaignUseCase, userUseCase *usecas
 	}
 }
 
+// create campaign by current user
 func (c *CampaignController) CreateCampaign(ctx *fiber.Ctx) error {
 	request := new(model.CreateCampaignRequest)
 	if err := ctx.BodyParser(request); err != nil {
@@ -49,6 +50,7 @@ func (c *CampaignController) CreateCampaign(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.WebResponse[*model.CampaignResponse]{Data: response})
 }
 
+// list campaign by current user
 func (c *CampaignController) List(ctx *fiber.Ctx) error {
 	request := &model.SearchCampaignRequest{
 		CampaignName: ctx.Query("campaign_name", ""),
@@ -87,6 +89,7 @@ func (c *CampaignController) Get(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.WebResponse[*model.CampaignResponse]{Data: response})
 }
 
+// update campaign by current user
 func (c *CampaignController) Update(ctx *fiber.Ctx) error {
 	request := new(model.UpdateCampaignRequest)
 	if err := ctx.BodyParser(request); err != nil {

@@ -11,5 +11,7 @@ func CampaignImageToResponse(campaignImage *entity.CampaignImage) *model.Campaig
 		CampaignID: campaignImage.CampaignID,
 		FileName:   campaignImage.FileName,
 		IsPrimary:  campaignImage.IsPrimary,
+		CreatedAt:  campaignImage.CreatedAt,
+		UpdatedAt:  campaignImage.UpdatedAt,
 	}
 }

@@ -33,6 +33,7 @@ func Bootstrap(config *BootstrapConfig) {
 	// repositories
 	userRepository := repository.NewUserRepository(config.Log)
 	campaignRepository := repository.NewCampaignRepository(config.Log)
+	campaignImageRepository := repository.NewCampaignImageRepository(config.Log)
 
 	// services
 	GetOauth2GoogleService := get_service.NewGetOauth2GoogleService(config.Log, config.Config)
@@ -46,22 +47,25 @@ func Bootstrap(config *BootstrapConfig) {
 	storeObjectUseCase := usecase.NewStoreObjectUseCase(config.Log)
 	userUseCase := usecase.NewUserUseCase(config.DB, config.Log, config.Validate, userRepository, storeObjectUseCase, objectStore)
 	campaignUseCase := usecase.NewCampaignUseCase(config.DB, config.Log, config.Validate, campaignRepository, userRepository)
+	campaignImageUseCase := usecase.NewCampaignImageUseCase(config.DB, config.Log, config.Validate, campaignImageRepository, campaignRepository, userRepository, storeObjectUseCase, objectStore)
 
 	// controllers
 	oauth2Controller := http.NewOauth2Controller(oauth2UseCase, config.Log)
 	userController := http.NewUserController(userUseCase, config.Log)
 	campaignController := http.NewCampaignController(campaignUseCase, userUseCase, config.Log)
+	campaignImageController := http.NewCampaignImageController(campaignImageUseCase, userUseCase, config.Log)
 
 	// middleware
 	oauth2Middleware := middleware.NewOauth2Middleware(config.Oauth2, config.Config, config.Log, GetOauth2GoogleService)
 
 	// routes
 	routeConfig := route.RouteConfig{
-		App:                config.App,
-		Oauth2Middleware:   oauth2Middleware,
-		Oauth2Controller:   oauth2Controller,
-		UserController:     userController,
-		CampaignController: campaignController,
+		App:                     config.App,
+		Oauth2Middleware:        oauth2Middleware,
+		Oauth2Controller:        oauth2Controller,
+		UserController:          userController,
+		CampaignController:      campaignController,
+		CampaignImageController: campaignImageController,
 	}
 	routeConfig.Setup()
 }
