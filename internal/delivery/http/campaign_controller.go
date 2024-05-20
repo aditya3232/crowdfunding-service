@@ -76,3 +76,13 @@ func (c *CampaignController) List(ctx *fiber.Ctx) error {
 		Paging: paging,
 	})
 }
+
+func (c *CampaignController) Get(ctx *fiber.Ctx) error {
+	response, err := c.UseCase.Get(ctx.UserContext(), &model.GetCampaignRequest{ID: ctx.Params("campaignId")})
+	if err != nil {
+		c.Log.WithError(err).Error("error getting campaign")
+		return err
+	}
+
+	return ctx.JSON(model.WebResponse[*model.CampaignResponse]{Data: response})
+}

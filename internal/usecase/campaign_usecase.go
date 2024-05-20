@@ -81,6 +81,30 @@ func (u *CampaignUseCase) Create(ctx context.Context, request *model.CreateCampa
 
 }
 
+func (u *CampaignUseCase) Get(ctx context.Context, request *model.GetCampaignRequest) (*model.CampaignResponse, error) {
+	tx := u.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	if err := u.Validate.Struct(request); err != nil {
+		u.Log.WithError(err).Error("error validating request body")
+		return nil, fiber.ErrBadRequest
+	}
+
+	campaign := new(entity.Campaign)
+	if err := u.CampaignRepository.GetById(tx, campaign, request.ID); err != nil {
+		u.Log.WithError(err).Error("error finding campaign")
+		return nil, fiber.ErrNotFound
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Log.WithError(err).Error("error committing transaction")
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return converter.CampaignToResponse(campaign), nil
+
+}
+
 func (u *CampaignUseCase) Search(ctx context.Context, request *model.SearchCampaignRequest) ([]model.CampaignResponse, int64, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()

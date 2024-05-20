@@ -19,15 +19,20 @@ func NewCampaignRepository(log *logrus.Logger) *CampaignRepository {
 	}
 }
 
+func (r *CampaignRepository) GetById(db *gorm.DB, campaign *entity.Campaign, campaignID string) error {
+	return db.Where("id = ?", campaignID).
+		Preload("CampaignImages").
+		Preload("User").
+		Take(campaign).Error
+}
+
 func (r *CampaignRepository) Search(db *gorm.DB, request *model.SearchCampaignRequest) ([]entity.Campaign, int64, error) {
 	var campaigns []entity.Campaign
 
 	// Apply filters and preload related data
-	query := db.Scopes(r.FilterCampaign(request)).
+	if err := db.Scopes(r.FilterCampaign(request)).
 		Preload("CampaignImages", "campaign_images.is_primary = 1").
-		Preload("User")
-
-	if err := query.
+		Preload("User").
 		Offset((request.Page - 1) * request.Size).Limit(request.Size).Find(&campaigns).Error; err != nil {
 		return nil, 0, err
 	}

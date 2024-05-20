@@ -62,5 +62,6 @@ func (c *RouteConfig) SetupAuthRoute() {
 
 	AuthGroup.Post("/campaigns", c.CampaignController.CreateCampaign)
 	AuthGroup.Get("/campaigns", c.CampaignController.List)
+	AuthGroup.Get("/campaigns/:campaignId", c.CampaignController.Get)
 
 }
