@@ -67,11 +67,7 @@ func (c *UserController) List(ctx *fiber.Ctx) error {
 }
 
 func (c *UserController) Get(ctx *fiber.Ctx) error {
-	request := &model.GetUserRequest{
-		ID: ctx.Params("userId"),
-	}
-
-	response, err := c.UseCase.Get(ctx.UserContext(), request)
+	response, err := c.UseCase.Get(ctx.UserContext(), &model.GetUserRequest{ID: ctx.Params("userId")})
 	if err != nil {
 		c.Log.WithError(err).Error("error getting user")
 		return err
@@ -99,13 +95,7 @@ func (c *UserController) Update(ctx *fiber.Ctx) error {
 }
 
 func (c *UserController) Delete(ctx *fiber.Ctx) error {
-	userId := ctx.Params("userId")
-
-	request := &model.DeleteUserRequest{
-		ID: userId,
-	}
-
-	err := c.UseCase.Delete(ctx.UserContext(), request)
+	err := c.UseCase.Delete(ctx.UserContext(), &model.DeleteUserRequest{ID: ctx.Params("userId")})
 	if err != nil {
 		c.Log.WithError(err).Error("error deleting user")
 		return err
@@ -116,12 +106,7 @@ func (c *UserController) Delete(ctx *fiber.Ctx) error {
 
 func (c *UserController) CurrentUser(ctx *fiber.Ctx) error {
 	auth := middleware.GetUser(ctx)
-
-	request := &model.GetUserByEmailRequest{
-		Email: auth.Email,
-	}
-
-	response, err := c.UseCase.GetByEmail(ctx.UserContext(), request)
+	response, err := c.UseCase.GetByEmail(ctx.UserContext(), &model.GetUserByEmailRequest{Email: auth.Email})
 	if err != nil {
 		c.Log.WithError(err).Error("error getting current user")
 		return err
@@ -137,7 +122,14 @@ func (c *UserController) UpdateAvatar(ctx *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	request.ID = ctx.Params("userId")
+	auth := middleware.GetUser(ctx)
+	responseGetUserByEmail, err := c.UseCase.GetByEmail(ctx.UserContext(), &model.GetUserByEmailRequest{Email: auth.Email})
+	if err != nil {
+		c.Log.WithError(err).Error("error getting user by email")
+		return err
+	}
+
+	request.ID = responseGetUserByEmail.ID
 
 	file, err := ctx.FormFile("upload_avatar")
 	if err != nil {
