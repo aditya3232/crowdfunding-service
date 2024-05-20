@@ -10,11 +10,12 @@ import (
 )
 
 type RouteConfig struct {
-	App              *fiber.App
-	Log              *logrus.Logger
-	Oauth2Middleware *middleware.Oauth2Middleware
-	UserController   *http.UserController
-	Oauth2Controller *http.Oauth2Controller
+	App                *fiber.App
+	Log                *logrus.Logger
+	Oauth2Middleware   *middleware.Oauth2Middleware
+	Oauth2Controller   *http.Oauth2Controller
+	UserController     *http.UserController
+	CampaignController *http.CampaignController
 }
 
 func (c *RouteConfig) Setup() {
@@ -58,5 +59,8 @@ func (c *RouteConfig) SetupAuthRoute() {
 	AuthGroup.Put("/users/upload/avatar", c.UserController.UpdateAvatar)
 	AuthGroup.Get("/users/:userId", c.UserController.Get)
 	AuthGroup.Delete("/users/:userId", c.UserController.Delete)
+
+	AuthGroup.Post("/campaigns", c.CampaignController.CreateCampaign)
+	AuthGroup.Get("/campaigns", c.CampaignController.List)
 
 }

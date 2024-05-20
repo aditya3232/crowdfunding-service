@@ -18,3 +18,7 @@ type Campaign struct {
 	CampaignImages   []CampaignImage // 1 campaign has many campaign images
 	User             User
 }
+
+func (c *Campaign) TableName() string {
+	return "campaigns"
+}
