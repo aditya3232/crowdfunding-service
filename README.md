@@ -71,6 +71,12 @@ migrate -database "mysql://root:root@tcp(localhost:3306)/crowdfunding_db?charset
 
 ## Run Application
 
+### Install Dependency
+
+```bash
+go mod tidy
+```
+
 ### Run unit test
 
 ```bash

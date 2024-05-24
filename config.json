@@ -41,5 +41,9 @@
       "revokeAccessToken": "https://accounts.google.com/o/oauth2/revoke?token="
 
     }
+  },
+  "midtrans": {
+    "serverKey": "SB-Mid-server-ehZCUlKNpaer2TgLo_2wiwvH",
+    "clientKey": "SB-Mid-client-A94BrBSHxRatxAF5"
   }
 }
