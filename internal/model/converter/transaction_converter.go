@@ -15,9 +15,15 @@ func CampaignTransactionToResponse(transaction *entity.Transaction) *model.Campa
 }
 
 func UserTransactionToResponse(transaction *entity.Transaction) *model.UserTransactionResponse {
+	// pengecekan jika gambar tidak kosong, mengambil gambar pertama
+	var imageURL string
+	if len(transaction.Campaign.CampaignImages) > 0 {
+		imageURL = transaction.Campaign.CampaignImages[0].FileName
+	}
+
 	campaign := model.Campaign{
 		Name:     transaction.Campaign.Name,
-		ImageURL: transaction.Campaign.CampaignImages[0].FileName,
+		ImageURL: imageURL,
 	}
 
 	return &model.UserTransactionResponse{

@@ -49,14 +49,20 @@ type CreateTransactionNotificationRequest struct {
 	FraudStatus       string `json:"fraud_status"`
 }
 
-type SearchCampaignTransactionRequest struct {
-	UserName string `json:"user_name" validate:"max=255"`
+// get all need paginate
+type GetTransactionByCampaignIDRequest struct {
+	CampaignID string `json:"campaign_id" validate:"required,max=100,uuid"`
+	Page       int    `json:"page" validate:"min=1"`
+	Size       int    `json:"size" validate:"min=1,max=100"`
 }
 
-type SearchUserTransactionRequest struct {
-	Status string `json:"status" validate:"max=255"`
+// get all need paginate
+type GetTransactionByUserIDRequest struct {
+	UserID string `json:"user_id" validate:"required,max=100,uuid"`
+	Page   int    `json:"page" validate:"min=1"`
+	Size   int    `json:"size" validate:"min=1,max=100"`
 }
 
-type GetCampaignTransactionRequest struct {
-	CampaignID string `json:"-" validate:"required,max=100,uuid"`
+type GetTransactionRequest struct {
+	ID string `json:"-" validate:"required,max=100,uuid"`
 }
