@@ -8,20 +8,20 @@ import (
 	"github.com/veritrans/go-midtrans"
 )
 
-type MidtransSnapGateway struct {
+type MidtransPaymentGateway struct {
 	Log    *logrus.Logger
 	Config *viper.Viper
 }
 
-func NewMidtransSnapGateway(log *logrus.Logger, config *viper.Viper) *MidtransSnapGateway {
-	return &MidtransSnapGateway{
+func NewMidtransPaymentGateway(log *logrus.Logger, config *viper.Viper) *MidtransPaymentGateway {
+	return &MidtransPaymentGateway{
 		Log:    log,
 		Config: config,
 	}
 }
 
 // get payment url
-func (m *MidtransSnapGateway) GetPaymentURL(paymentRequest *model.PaymentRequest) (string, error) {
+func (m *MidtransPaymentGateway) GetPaymentURL(paymentRequest *model.PaymentRequest) (string, error) {
 	client := midtrans.NewClient()
 	client.ServerKey = m.Config.GetString("midtrans.serverKey")
 	client.ClientKey = m.Config.GetString("midtrans.clientKey")

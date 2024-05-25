@@ -20,7 +20,7 @@ func NewCampaignRepository(log *logrus.Logger) *CampaignRepository {
 }
 
 // penamaan di repository custom (bukan dari generic repository) menggunakan nama yang lebih spesifik (misal: GetById, Search, FindCampaignTransaction)
-func (r *CampaignRepository) GetById(db *gorm.DB, campaign *entity.Campaign, campaignID string) error {
+func (r *CampaignRepository) GetByID(db *gorm.DB, campaign *entity.Campaign, campaignID string) error {
 	return db.Where("id = ?", campaignID).
 		Preload("CampaignImages").
 		Preload("User").

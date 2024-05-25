@@ -14,14 +14,14 @@ type TransactionResponse struct {
 	CreatedAt  time.Time `json:"created_at"`
 }
 
-type CampaignTransactionResponse struct {
+type GetTransactionByCampaignIDResponse struct {
 	ID        string    `json:"id"`
 	UserName  string    `json:"user_name"`
 	Amount    int       `json:"amount"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type UserTransactionResponse struct {
+type GetTransactionByUserIDResponse struct {
 	ID        string    `json:"id"`
 	Amount    int       `json:"amount"`
 	Status    string    `json:"status"`
@@ -38,27 +38,29 @@ type CreateTransactionRequest struct {
 	CampaignID string `json:"campaign_id" validate:"required"`
 	UserID     string `json:"user_id" validate:"required"`
 	Amount     int    `json:"amount" validate:"required"`
-	Status     string `json:"status" validate:"required"`
 }
 
 // request to create transaction notification (notifikasi pembayaran) yg dikirim dari midtrans ke service kita
 type CreateTransactionNotificationRequest struct {
+	ID                string `json:"id"` // transaction_id
 	TransactionStatus string `json:"transaction_status"`
-	OrderID           string `json:"order_id"`
 	PaymentType       string `json:"payment_type"`
 	FraudStatus       string `json:"fraud_status"`
 }
 
 // get all need paginate
+// user_id yang melakukan request (yg login)
+// tidak perlu json tag
 type GetTransactionByCampaignIDRequest struct {
-	CampaignID string `json:"campaign_id" validate:"required,max=100,uuid"`
+	CampaignID string `json:"-" validate:"required,max=100,uuid"`
+	UserID     string `json:"-" validate:"required,max=100,uuid"`
 	Page       int    `json:"page" validate:"min=1"`
 	Size       int    `json:"size" validate:"min=1,max=100"`
 }
 
 // get all need paginate
 type GetTransactionByUserIDRequest struct {
-	UserID string `json:"user_id" validate:"required,max=100,uuid"`
+	UserID string `json:"-" validate:"required,max=100,uuid"`
 	Page   int    `json:"page" validate:"min=1"`
 	Size   int    `json:"size" validate:"min=1,max=100"`
 }

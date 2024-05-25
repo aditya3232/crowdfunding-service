@@ -137,7 +137,7 @@ func (u *CampaignUseCase) Get(ctx context.Context, request *model.GetCampaignReq
 	}
 
 	campaign := new(entity.Campaign)
-	if err := u.CampaignRepository.GetById(tx, campaign, request.ID); err != nil {
+	if err := u.CampaignRepository.GetByID(tx, campaign, request.ID); err != nil {
 		u.Log.WithError(err).Error("error finding campaign")
 		return nil, fiber.ErrNotFound
 	}
