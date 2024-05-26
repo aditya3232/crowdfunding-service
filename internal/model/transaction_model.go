@@ -36,8 +36,9 @@ type Campaign struct {
 
 type CreateTransactionRequest struct {
 	CampaignID string `json:"campaign_id" validate:"required"`
-	UserID     string `json:"user_id" validate:"required"`
+	UserID     string `json:"-" validate:"required"` // user_id yang login
 	Amount     int    `json:"amount" validate:"required"`
+	Status     string `json:"-" validate:"required"` // default: pending
 }
 
 // request to create transaction notification (notifikasi pembayaran) yg dikirim dari midtrans ke service kita
@@ -49,18 +50,20 @@ type CreateTransactionNotificationRequest struct {
 }
 
 // get all need paginate
-// user_id yang melakukan request (yg login)
-// tidak perlu json tag
+// user_id disini digunakan untuk melihat user yg melakukan transactions pada campaigns
+// semua user yg login dapat melihatnya
 type GetTransactionByCampaignIDRequest struct {
-	CampaignID string `json:"-" validate:"required,max=100,uuid"`
-	UserID     string `json:"-" validate:"required,max=100,uuid"`
+	CampaignID string `json:"campaign_id" validate:"required,max=100,uuid"`
+	UserID     string `json:"user_id" validate:"required,max=100,uuid"`
 	Page       int    `json:"page" validate:"min=1"`
 	Size       int    `json:"size" validate:"min=1,max=100"`
 }
 
 // get all need paginate
+// kalau user_id disini digunakan untuk melihat transactions yang dilakukan oleh user tersebut (yang login)
+
 type GetTransactionByUserIDRequest struct {
-	UserID string `json:"-" validate:"required,max=100,uuid"`
+	UserID string `json:"-" validate:"required,max=100,uuid"` // user_id yang login
 	Page   int    `json:"page" validate:"min=1"`
 	Size   int    `json:"size" validate:"min=1,max=100"`
 }
