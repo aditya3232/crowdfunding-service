@@ -38,7 +38,7 @@ type CreateTransactionRequest struct {
 	CampaignID string `json:"campaign_id" validate:"required"`
 	UserID     string `json:"-" validate:"required"` // user_id yang login
 	Amount     int    `json:"amount" validate:"required"`
-	Status     string `json:"-" validate:"required"` // default: pending
+	Status     string `json:"-"` // default: pending
 }
 
 // request to create transaction notification (notifikasi pembayaran) yg dikirim dari midtrans ke service kita

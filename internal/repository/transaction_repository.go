@@ -19,6 +19,15 @@ func NewTransactionRepository(log *logrus.Logger) *TransactionRepository {
 	}
 }
 
+// create transaction dengan balikan data transaction
+func (r *TransactionRepository) CreateTransaction(db *gorm.DB, transaction *entity.Transaction) (*entity.Transaction, error) {
+	if err := db.Create(transaction).Error; err != nil {
+		return nil, err
+	}
+
+	return transaction, nil
+}
+
 func (r *TransactionRepository) GetTransactionByCampaignID(db *gorm.DB, request *model.GetTransactionByCampaignIDRequest) ([]entity.Transaction, int64, error) {
 	var transactions []entity.Transaction
 

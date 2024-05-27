@@ -143,7 +143,9 @@ func (u *TransactionUseCase) CreateTransaction(ctx context.Context, request *mod
 		Status:     "pending",
 	}
 
-	if err := u.TransactionRepository.Create(tx, transaction); err != nil {
+	// disini pakai create repository custom, karena kita ingin mengembalikan data transaction yang sudah di create
+	NewTransaction, err := u.TransactionRepository.CreateTransaction(tx, transaction)
+	if err != nil {
 		u.Log.WithError(err).Error("error creating transaction")
 		return nil, fiber.ErrInternalServerError
 	}
@@ -152,8 +154,8 @@ func (u *TransactionUseCase) CreateTransaction(ctx context.Context, request *mod
 	payment := &model.PaymentRequest{
 		Email:         user.Email,
 		FullName:      user.Name,
-		TransactionID: transaction.ID,
-		Amount:        transaction.Amount,
+		TransactionID: NewTransaction.ID,
+		Amount:        NewTransaction.Amount,
 	}
 
 	// minta payment URL ke midtrans
