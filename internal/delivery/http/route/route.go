@@ -64,7 +64,6 @@ func (c *RouteConfig) SetupAuthRoute() {
 	AuthGroup.Put("/users/:userId", c.UserController.Update)
 	AuthGroup.Put("/users/avatar/upload", c.UserController.UpdateAvatar)
 	AuthGroup.Get("/users/:userId", c.UserController.Get)
-	AuthGroup.Delete("/users/:userId", c.UserController.Delete)
 
 	AuthGroup.Post("/campaigns", c.CampaignController.CreateCampaign)
 	AuthGroup.Get("/campaigns", c.CampaignController.List)

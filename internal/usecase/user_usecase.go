@@ -191,34 +191,6 @@ func (u *UserUseCase) GetByEmail(ctx context.Context, request *model.GetUserByEm
 	return converter.UserToResponse(user), nil
 }
 
-func (u *UserUseCase) Delete(ctx context.Context, request *model.DeleteUserRequest) error {
-	tx := u.DB.WithContext(ctx).Begin()
-	defer tx.Rollback()
-
-	if err := u.Validate.Struct(request); err != nil {
-		u.Log.WithError(err).Error("error validating request body")
-		return fiber.ErrBadRequest
-	}
-
-	user := new(entity.User)
-	if err := u.UserRepository.FindById(tx, user, request.ID); err != nil {
-		u.Log.WithError(err).Error("error finding user")
-		return fiber.ErrNotFound
-	}
-
-	if err := u.UserRepository.Delete(tx, user); err != nil {
-		u.Log.WithError(err).Error("error deleting user")
-		return fiber.ErrInternalServerError
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		u.Log.WithError(err).Error("error committing transaction")
-		return fiber.ErrInternalServerError
-	}
-
-	return nil
-}
-
 func (u *UserUseCase) Search(ctx context.Context, request *model.SearchUserRequest) ([]model.UserResponse, int64, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()

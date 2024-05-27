@@ -94,16 +94,6 @@ func (c *UserController) Update(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.WebResponse[*model.UserResponse]{Data: response})
 }
 
-func (c *UserController) Delete(ctx *fiber.Ctx) error {
-	err := c.UseCase.Delete(ctx.UserContext(), &model.DeleteUserRequest{ID: ctx.Params("userId")})
-	if err != nil {
-		c.Log.WithError(err).Error("error deleting user")
-		return err
-	}
-
-	return ctx.JSON(model.WebResponse[bool]{Data: true})
-}
-
 func (c *UserController) CurrentUser(ctx *fiber.Ctx) error {
 	auth := middleware.GetUser(ctx)
 	response, err := c.UseCase.GetByEmail(ctx.UserContext(), &model.GetUserByEmailRequest{Email: auth.Email})
