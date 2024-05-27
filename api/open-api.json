@@ -1,40 +1,32 @@
 {
-    "openapi":"3.0.3",
-    "info": {
-      "title":"Category Restfull API",
-      "description": "API Spec for Category Restfull API",
-      "version":"1.0.0"
-    },
-    "servers": [
-      {"url":"http://localhost:3000/api"}
-    ],
-    "paths": {
-      "/categories": {
-        "get": {
-          "security": [{
-            "CategoryAuth": []
-          }],
-          "tags": ["Category API"],
-          "description": "List all categories",
-          "summary": "List all categories",
-          "responses": {
-            "200": {
-              "description": "Success get all categories",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "number"
-                      },
-                      "status": {
-                        "type": "string"
-                      },
-                      "data": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/components/schemas/ResponseCategory"
+  "openapi":"3.0.3",
+  "info": {
+    "title":"Crowfunding Restfull API",
+    "description": "API Spec for Crowdfunding Restfull API",
+    "version":"1.0.0"
+  },
+  "servers": [
+    {"url":"http://127.0.0.1:2024/api"}
+  ],
+  "paths": {
+    "/google/login": {
+      "get": {
+        "tags": ["Oauth2 API"],
+        "description": "Login with google",
+        "summary": "Login with google",
+        "responses": {
+          "200": {
+            "description": "Success login with google",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "login_url": {
+                          "type": "string"
                         }
                       }
                     }
@@ -43,161 +35,48 @@
               }
             }
           }
-        },
-        "post": {
-          "security": [{
-            "CategoryAuth": []
-          }],
-          "tags": ["Category API"],
-          "description": "Create new category",
-          "summary": "Create new category",
-          "requestBody": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RequestBodyCreateOrUpdateCategory"
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Success Create Category",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "number"
-                      },
-                      "status": {
-                        "type": "string"
-                      },
-                      "data": {
-                        "$ref": "#/components/schemas/ResponseCategory"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
-      },
-      "/categories/{categoryId}": {
-        "get": {
-          "security": [{
-            "CategoryAuth": []
-          }],
-          "tags": ["Category API"],
-          "summary": "Get category by id",
-          "description": "Get category by id",
-          "parameters": [
-            {
-              "name": "categoryId",
-              "in": "path",
-              "description": "Category id"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Success get category",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "number"
-                      },
-                      "status": {
-                        "type": "string"
-                      },
-                      "data": {
-                        "$ref": "#/components/schemas/ResponseCategory"
-                      }
-                    }
+      }
+    },
+    "/google/refresh": {
+      "post": {
+        "tags": ["Oauth2 API"],
+        "description": "Refresh token with google",
+        "summary": "Refresh token with google",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refresh_token": {
+                    "type": "string"
                   }
                 }
               }
             }
           }
         },
-        "put": {
-          "security": [{
-            "CategoryAuth": []
-          }],
-          "tags": ["Category API"],
-          "summary": "Update category by id",
-          "description": "Update category by id",
-          "parameters": [
-            {
-              "name": "categoryId",
-              "in": "path",
-              "description": "Category Id"
-            }
-          ],
-          "requestBody": {
+        "responses": {
+          "200": {
+            "description": "Success refresh token with google",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RequestBodyCreateOrUpdateCategory"
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Success update category",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "number"
-                      },
-                      "status": {
-                        "type": "string"
-                      },
-                      "data": {
-                        "$ref": "#/components/schemas/ResponseCategory"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "delete": {
-          "security": [{
-            "CategoryAuth": []
-          }],
-          "tags": ["Category API"],
-          "summary": "Delete category by id",
-          "description": "Delete category by id",
-          "parameters": [
-            {
-              "name": "categoryId",
-              "in": "path",
-              "description": "Category id"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Success delete category",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "code": {
-                        "type": "number"
-                      },
-                      "status": {
-                        "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "access_token": {
+                          "type": "string"
+                        },
+                        "refresh_token": {
+                          "type": "string"
+                        },
+                        "expires_in": {
+                          "type": "string"
+                        }
                       }
                     }
                   }
@@ -208,35 +87,117 @@
         }
       }
     },
-    "components": {
-      "schemas": {
-        "ResponseCategory": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number"
-            },
-            "name": {
-              "type": "string"
+    "/google/revoke": {
+      "post": {
+        "tags": ["Oauth2 API"],
+        "description": "Revoke token with google",
+        "summary": "Revoke token with google",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "access_token": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },
-        "RequestBodyCreateOrUpdateCategory": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
+        "responses": {
+          "200": {
+            "description": "Success revoke token with google",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                      "data": {
+                        "type": "boolean"
+                      }
+                  }
+                }
+              }
             }
           }
         }
-      },
-      "securitySchemes": {
-        "CategoryAuth": {
-          "type": "apiKey",
-          "name": "X-API-Key",
-          "in": "header",
-          "description": "Authentication for category api"
-        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": ["User API"],
+        "description": "Register user",
+        "summary": "Register user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "occupation": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success register user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "occupation": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string"
+                        },
+                        "updated_at": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }  
       }
     }
   }
+}
+

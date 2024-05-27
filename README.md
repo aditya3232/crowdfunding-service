@@ -27,6 +27,7 @@ Ini adalah Layered Architecture kalau dilihat secara struktur partisinya
 ## Framework & Library
 
 - GoFiber (HTTP Framework) : https://github.com/gofiber/fiber
+- GoFiber CORS (CORS Middleware) : https://docs.gofiber.io/api/middleware/cors
 - GORM (ORM) : https://github.com/go-gorm/gorm
 - Viper (Configuration) : https://github.com/spf13/viper
 - Go Migrate (Database Migration) : https://github.com/golang-migrate/migrate
