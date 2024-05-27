@@ -265,7 +265,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "avatar": {
+                  "upload_avatar": {
                     "type": "string",
                     "format": "binary"
                   }
