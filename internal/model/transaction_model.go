@@ -54,7 +54,7 @@ type CreateTransactionNotificationRequest struct {
 // semua user yg login dapat melihatnya
 type GetTransactionByCampaignIDRequest struct {
 	CampaignID string `json:"campaign_id" validate:"required,max=100,uuid"`
-	UserID     string `json:"user_id" validate:"required,max=100,uuid"`
+	UserID     string `json:"user_id" validate:"max=255"`
 	Page       int    `json:"page" validate:"min=1"`
 	Size       int    `json:"size" validate:"min=1,max=100"`
 }

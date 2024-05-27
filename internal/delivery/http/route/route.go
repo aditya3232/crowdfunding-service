@@ -50,7 +50,9 @@ func (c *RouteConfig) SetupGuestRoute() {
 	GuestGroup.Post("/google/revoke", c.Oauth2Controller.RevokeToken)
 	GuestGroup.Post("/google/refresh", c.Oauth2Controller.RefreshToken)
 
-	GuestGroup.Post("/transactions/notification", c.TransactionController.CreateTransactionNotification) // endpoint ini yg akan digunakan midtrans mengirim notification status pembayaran
+	// endpoint ini yg akan digunakan midtrans mengirim notification status pembayaran
+	// dipengaturan midtrans, meunuju ke settings, lalu payment, lalu edit notifcation URL
+	GuestGroup.Post("/transactions/notification", c.TransactionController.CreateTransactionNotification)
 }
 
 func (c *RouteConfig) SetupAuthRoute() {
@@ -70,8 +72,8 @@ func (c *RouteConfig) SetupAuthRoute() {
 	AuthGroup.Put("/campaigns/:campaignId", c.CampaignController.Update)
 	AuthGroup.Post("/campaigns/image/upload", c.CampaignImageController.Create)
 
-	AuthGroup.Get("/transactions", c.TransactionController.GetTransactionsByUserID)
+	AuthGroup.Get("/transactions", c.TransactionController.GetTransactionsByUserID) // ambil semua transaksi dari user yg login
 	AuthGroup.Post("/transactions", c.TransactionController.CreateTransaction)
-	AuthGroup.Get("/transactions/campaigns/:campaignId", c.TransactionController.GetTransactionsByCampaignID)
+	AuthGroup.Get("/transactions/campaigns/:campaignId", c.TransactionController.GetTransactionsByCampaignID) // ambil semua campaign dari pemiliknya (filter user_id wajib diisi)
 
 }
