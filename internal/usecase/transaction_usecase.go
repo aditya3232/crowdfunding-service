@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -113,6 +114,15 @@ func (u *TransactionUseCase) GetTransactionsByUserID(ctx context.Context, reques
 	return responses, total, nil
 }
 
+/*
+- disini ada penerapan transactional
+- Membuat SavePoint sebelum membuat transaksi dengan tx.SavePoint("sp_before_create_transaction")
+- Membuat transaksi dan jika terjadi kesalahan, akan melakukan tx.RollbackTo("sp_before_create_transaction")
+- Jika semua langkah berjalan dengan baik, maka melakukan tx.Commit() untuk menyimpan semua perubahan dalam transaksi
+- fungsinya adalah jika terjadi kesalahan di tengah-tengah proses, kita bisa melakukan rollback ke savepoint yang sudah dibuat
+- disini perlu savpoint karena create harus berhasil, karena id transaction yang di create akan digunakan untuk membuat payment URL
+- baru kemudian update transaction dengan payment URL
+*/
 func (u *TransactionUseCase) CreateTransaction(ctx context.Context, request *model.CreateTransactionRequest) (*model.TransactionResponse, error) {
 	tx := u.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()
@@ -137,18 +147,30 @@ func (u *TransactionUseCase) CreateTransaction(ctx context.Context, request *mod
 	}
 
 	transaction := &entity.Transaction{
+		ID:         uuid.New().String(),
 		CampaignID: request.CampaignID,
 		UserID:     request.UserID,
 		Amount:     request.Amount,
 		Status:     "pending",
 	}
 
-	// disini pakai create repository custom, karena kita ingin mengembalikan data transaction yang sudah di create
+	// Create a savepoint before creating the transaction
+	if err := tx.SavePoint("sp_before_create_transaction").Error; err != nil {
+		u.Log.WithError(err).Error("error creating savepoint")
+		return nil, fiber.ErrInternalServerError
+	}
+
+	// disini pakai create repository custom, karena kita ingin mengembalikan data id transaction yang sudah di create
+	// create the transaction
 	NewTransaction, err := u.TransactionRepository.CreateTransaction(tx, transaction)
 	if err != nil {
 		u.Log.WithError(err).Error("error creating transaction")
+		tx.RollbackTo("sp_before_create_transaction")
 		return nil, fiber.ErrInternalServerError
 	}
+
+	// log data NewTransaction
+	u.Log.WithField("NewTransaction", NewTransaction).Info("New Transaction")
 
 	// generate payment URL
 	payment := &model.PaymentRequest{
@@ -169,6 +191,7 @@ func (u *TransactionUseCase) CreateTransaction(ctx context.Context, request *mod
 	transaction.PaymentURL = paymentURL
 	if err := u.TransactionRepository.Update(tx, transaction); err != nil {
 		u.Log.WithError(err).Error("error updating transaction")
+		tx.RollbackTo("sp_before_create_transaction")
 		return nil, fiber.ErrInternalServerError
 	}
 
