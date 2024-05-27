@@ -39,7 +39,6 @@
       "scopeUserProfile": "https://www.googleapis.com/auth/userinfo.profile",
       "getUserInfoWithAccessToken": "https://www.googleapis.com/oauth2/v2/userinfo?access_token=",
       "revokeAccessToken": "https://accounts.google.com/o/oauth2/revoke?token="
-
     }
   },
   "midtrans": {

@@ -17,6 +17,7 @@ type RouteConfig struct {
 	UserController          *http.UserController
 	CampaignController      *http.CampaignController
 	CampaignImageController *http.CampaignImageController
+	TransactionController   *http.TransactionController
 }
 
 func (c *RouteConfig) Setup() {
@@ -48,6 +49,9 @@ func (c *RouteConfig) SetupGuestRoute() {
 	GuestGroup.Get("/google/callback", c.Oauth2Controller.GoogleCallback)
 	GuestGroup.Post("/google/revoke", c.Oauth2Controller.RevokeToken)
 	GuestGroup.Post("/google/refresh", c.Oauth2Controller.RefreshToken)
+
+	// endpoint ini yg akan digunakan midtrans mengirim notification status pembayaran
+	GuestGroup.Post("/transactions/notification", c.TransactionController.CreateTransactionNotification)
 }
 
 func (c *RouteConfig) SetupAuthRoute() {
@@ -57,7 +61,7 @@ func (c *RouteConfig) SetupAuthRoute() {
 	AuthGroup.Get("/users", c.UserController.List)
 	AuthGroup.Get("/users/me", c.UserController.CurrentUser)
 	AuthGroup.Put("/users/:userId", c.UserController.Update)
-	AuthGroup.Put("/users/upload/avatar", c.UserController.UpdateAvatar)
+	AuthGroup.Put("/users/avatar", c.UserController.UpdateAvatar)
 	AuthGroup.Get("/users/:userId", c.UserController.Get)
 	AuthGroup.Delete("/users/:userId", c.UserController.Delete)
 
@@ -65,7 +69,10 @@ func (c *RouteConfig) SetupAuthRoute() {
 	AuthGroup.Get("/campaigns", c.CampaignController.List)
 	AuthGroup.Get("/campaigns/:campaignId", c.CampaignController.Get)
 	AuthGroup.Put("/campaigns/:campaignId", c.CampaignController.Update)
+	AuthGroup.Post("/campaigns/image", c.CampaignImageController.Create)
 
-	AuthGroup.Post("/campaigns/upload/image", c.CampaignImageController.Create)
+	AuthGroup.Get("/transactions", c.TransactionController.GetTransactionsByUserID)
+	AuthGroup.Post("/transactions", c.TransactionController.CreateTransaction)
+	AuthGroup.Get("/transactions/campaigns/:campaignId", c.TransactionController.GetTransactionsByCampaignID)
 
 }

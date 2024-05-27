@@ -43,7 +43,7 @@ type CreateTransactionRequest struct {
 
 // request to create transaction notification (notifikasi pembayaran) yg dikirim dari midtrans ke service kita
 type CreateTransactionNotificationRequest struct {
-	ID                string `json:"id"` // transaction_id
+	TransactionID     string `json:"transaction_id"` // transaction_id
 	TransactionStatus string `json:"transaction_status"`
 	PaymentType       string `json:"payment_type"`
 	FraudStatus       string `json:"fraud_status"`

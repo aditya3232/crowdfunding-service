@@ -190,7 +190,7 @@ func (u *TransactionUseCase) CreateTransactionNotification(ctx context.Context, 
 	}
 
 	transaction := new(entity.Transaction)
-	if err := u.TransactionRepository.FindById(tx, transaction, request.ID); err != nil {
+	if err := u.TransactionRepository.FindById(tx, transaction, request.TransactionID); err != nil {
 		u.Log.WithError(err).Error("error getting transaction by ID")
 		return fiber.ErrNotFound
 	}

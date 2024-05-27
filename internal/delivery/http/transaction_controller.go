@@ -27,8 +27,8 @@ func NewTransactionController(useCase *usecase.TransactionUseCase, userUseCase *
 // get transactions by campaign id
 func (c *TransactionController) GetTransactionsByCampaignID(ctx *fiber.Ctx) error {
 	request := &model.GetTransactionByCampaignIDRequest{
-		CampaignID: ctx.Params("campaign_id"), // campaign_id diambil dari path parameter
-		UserID:     ctx.Query("user_id", ""),
+		CampaignID: ctx.Params("campaignId"), // campaign_id diambil dari path parameter
+		UserID:     ctx.Query("user_id", ""), // untuk filter user_id
 		Page:       ctx.QueryInt("page", 1),
 		Size:       ctx.QueryInt("size", 10),
 	}
