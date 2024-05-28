@@ -64,11 +64,13 @@ func Bootstrap(config *BootstrapConfig) {
 
 	// middleware
 	oauth2Middleware := middleware.NewOauth2Middleware(config.Oauth2, config.Config, config.Log, GetOauth2GoogleService)
+	corsMiddleware := middleware.NewCorsMiddleware(config.Config, config.Log)
 
 	// routes
 	routeConfig := route.RouteConfig{
 		App:                     config.App,
 		Oauth2Middleware:        oauth2Middleware,
+		CorsMiddleware:          corsMiddleware,
 		Oauth2Controller:        oauth2Controller,
 		UserController:          userController,
 		CampaignController:      campaignController,

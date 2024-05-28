@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,6 +13,7 @@ type RouteConfig struct {
 	App                     *fiber.App
 	Log                     *logrus.Logger
 	Oauth2Middleware        *middleware.Oauth2Middleware
+	CorsMiddleware          *middleware.CorsMiddleware
 	Oauth2Controller        *http.Oauth2Controller
 	UserController          *http.UserController
 	CampaignController      *http.CampaignController
@@ -22,11 +22,7 @@ type RouteConfig struct {
 }
 
 func (c *RouteConfig) Setup() {
-	c.App.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
-		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
-		AllowHeaders: "Content-Type,Authorization,OAuth2-token",
-	}))
+	c.App.Use(c.CorsMiddleware.CorsMiddleware())
 	c.App.Use(c.recoverPanic)
 	c.SetupGuestRoute()
 	c.SetupAuthRoute()
