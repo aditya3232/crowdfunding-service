@@ -196,6 +196,128 @@
             }
           }
         }  
+      },
+      "get": {
+        "security": [{
+          "OAuth2TokenAuth": []
+        }],
+        "tags": ["User API"],
+        "summary": "List all user",
+        "description": "List all user",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "id",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "name",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "email",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "role",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "page",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "size",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success list all user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "occupation": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "avatar": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "paging": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "size": {
+                          "type": "number"
+                        },
+                        "total_item": {
+                          "type": "number"
+                        },
+                        "total_page": {
+                          "type": "number"
+                        }
+                      }
+                    
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/users/me": {
@@ -591,6 +713,48 @@
         "tags": ["Campaign API"],
         "summary": "List all campaign",
         "description": "List all campaign",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "campaign_name",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "user_id",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "user_name",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "page",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "size",
+            "in": "query",
+            "required": false
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success list all campaign",
@@ -669,6 +833,23 @@
                               }
                             }
                           }
+                        }
+                      }
+                    },
+                    "paging": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "size": {
+                          "type": "number"
+                        },
+                        "total_item": {
+                          "type": "number"
+                        },
+                        "total_page": {
+                          "type": "number"
                         }
                       }
                     }
@@ -978,6 +1159,312 @@
             }
           }
         }
+      }
+    },
+    "/transactions": {
+      "post": {
+        "security": [{
+          "OAuth2TokenAuth": []
+        }],
+        "tags": ["Transaction API"],
+        "summary": "Create transaction",
+        "description": "Create transaction",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "campaign_id": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success create transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "campaign_id": {
+                          "type": "string"
+                        },
+                        "user_id": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "payment_url": {
+                          "type": "string"
+                        }, 
+                        "created_at": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [{
+          "OAuth2TokenAuth": []
+        }],
+        "tags": ["Transaction API"],
+        "summary": "List all transaction",
+        "description": "Retrieve all transactions from the logged-in user",
+        "parameters": [
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "page",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "size",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success list all transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "campaign": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "image_url": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "paging": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "size": {
+                          "type": "number"
+                        },
+                        "total_item": {
+                          "type": "number"
+                        },
+                        "total_page": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+      }
+    },
+    "/transactions/campaigns/{campaignId}": {
+      "get": {
+        "security": [{
+          "OAuth2TokenAuth": []
+        }],
+        "tags": ["Transaction API"],
+        "summary": "List all transaction by campaign id",
+        "description": "Retrieve all user transactions in the campaign, the user_id filter must be filled in",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "campaignId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "user_id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "page",
+            "in": "query",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "number"
+            },
+            "name": "size",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success list all transaction by campaign id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "user_name": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "paging": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "size": {
+                          "type": "number"
+                        },
+                        "total_item": {
+                          "type": "number"
+                        },
+                        "total_page": {
+                          "type": "number"
+                        }
+                      }
+                    
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/notification": {
+      "post": {
+        "security": [{
+          "OAuth2TokenAuth": []
+        }],
+        "tags": ["Transaction API"],
+        "summary": "Notification transaction",
+        "description": "This endpoint will be used by Midtrans to send payment status notifications",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transaction_status": {
+                    "type": "string"
+                  },
+                  "transaction_id": {
+                    "type": "string"
+                  },
+                  "payment_type": {
+                    "type": "string"
+                  },
+                  "fraud_status": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success notification transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
       }
     }
   },
