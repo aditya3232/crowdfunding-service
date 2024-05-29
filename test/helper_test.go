@@ -2,8 +2,8 @@ package test
 
 import (
 	"crowdfunding-service/internal/entity"
+	"mime/multipart"
 	"strconv"
-	"testing"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -15,6 +15,15 @@ func ClearAll() {
 	ClearUsers()
 }
 
+func IsImage(file *multipart.FileHeader) bool {
+	switch file.Header.Get("Content-Type") {
+	case "image/jpeg", "image/jpg", "image/png":
+		return true
+	default:
+		return false
+	}
+}
+
 func ClearUsers() {
 	err := db.Where("id is not null").Not("email = ?", "iashiddiqi13@gmail.com").Delete(&entity.User{}).Error
 	if err != nil {
@@ -22,7 +31,7 @@ func ClearUsers() {
 	}
 }
 
-func CreateUsers(t *testing.T, user *entity.User, total int) {
+func CreateUsers(user *entity.User, total int) {
 	password := "password"
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
@@ -46,7 +55,7 @@ func CreateUsers(t *testing.T, user *entity.User, total int) {
 	}
 }
 
-func GetFirstUser(t *testing.T) *entity.User {
+func GetFirstUser() *entity.User {
 	user := new(entity.User)
 	err := db.First(user).Error
 	if err != nil {

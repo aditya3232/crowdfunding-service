@@ -380,7 +380,7 @@
         }],
         "tags": ["User API"],
         "summary": "Upload avatar",
-        "description": "Upload avatar",
+        "description": "Upload avatar according to the logged-in user",
         "requestBody": {
           "content": {
             "multipart/form-data": {

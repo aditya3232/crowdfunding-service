@@ -35,7 +35,7 @@ type UpdateUserRequest struct {
 
 type UpdateAvatarRequest struct {
 	ID     string                `json:"-" validate:"required,max=100,uuid"`
-	Avatar *multipart.FileHeader `form:"avatar" validate:"omitempty"`
+	Avatar *multipart.FileHeader `json:"-" validate:"omitempty"`
 }
 
 type SearchUserRequest struct {

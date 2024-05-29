@@ -19,16 +19,6 @@ func NewStoreObjectUseCase(log *logrus.Logger) *StoreObjectUseCase {
 	}
 }
 
-// IsImage berfungsi untuk memeriksa apakah file adalah gambar berdasarkan tipe MIME
-func (c *StoreObjectUseCase) IsImage(file *multipart.FileHeader) bool {
-	switch file.Header.Get("Content-Type") {
-	case "image/jpeg", "image/jpg", "image/png":
-		return true
-	default:
-		return false
-	}
-}
-
 // IsValidImageFormat berfungsi untuk memeriksa apakah file adalah gambar berdasarkan format file
 /*
 	- buka file;

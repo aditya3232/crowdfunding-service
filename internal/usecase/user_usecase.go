@@ -241,11 +241,6 @@ func (u *UserUseCase) UpdateAvatar(ctx context.Context, request *model.UpdateAva
 			return nil, fiber.ErrBadRequest
 		}
 
-		if !u.StoreObjectUseCase.IsImage(request.Avatar) {
-			u.Log.Error("profile photo is not an image")
-			return nil, fiber.ErrBadRequest
-		}
-
 		if !u.StoreObjectUseCase.IsValidImageFormat(request.Avatar) {
 			u.Log.Error("profile photo is not a valid image format")
 			return nil, fiber.ErrBadRequest
@@ -260,7 +255,7 @@ func (u *UserUseCase) UpdateAvatar(ctx context.Context, request *model.UpdateAva
 
 	// if avatar is not nil, then set avatarFileName to user
 	if request.Avatar != nil {
-		user.AvatarFileName = "users/avatar-" + uuid.New().String()
+		user.AvatarFileName = "users/avatar-" + uuid.New().String() + ".jpg"
 	}
 
 	if err := u.UserRepository.Update(tx, user); err != nil {

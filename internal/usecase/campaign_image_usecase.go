@@ -55,11 +55,6 @@ func (u *CampaignImageUseCase) Create(ctx context.Context, request *model.Create
 			return nil, fiber.ErrBadRequest
 		}
 
-		if !u.StoreObjectUseCase.IsImage(request.FileImage) {
-			u.Log.Error("campaign image is not an image")
-			return nil, fiber.ErrBadRequest
-		}
-
 		if !u.StoreObjectUseCase.IsValidImageFormat(request.FileImage) {
 			u.Log.Error("campaign image is not a valid image format")
 			return nil, fiber.ErrBadRequest
