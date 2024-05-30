@@ -9,7 +9,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// dihelper tidak dapat ditest, dia hanya berisi fungsi-fungsi yang membantu dalam testing (tidak berawalan Testxxx)
+/*
+- dihelper tidak dapat ditest, dia hanya berisi fungsi-fungsi yang membantu dalam testing (tidak berawalan Testxxx)
+- helper langsung menjalankan fungsi-fungsi yang dibutuhkan dalam testing, bukan http request
+*/
 
 func ClearAll() {
 	ClearUsers()

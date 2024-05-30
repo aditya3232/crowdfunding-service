@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -119,6 +120,85 @@ func TestRegisterDuplicate(t *testing.T) {
 	assert.NotNil(t, responseBody.Errors)
 }
 
+func TestUpdateAvatar(t *testing.T) {
+	user := new(entity.User)
+	err := db.Where("email = ?", "iashiddiqi13@gmail.com").First(user).Error
+	assert.Nil(t, err)
+
+	file, err := os.Open("sakurawb.jpg")
+	assert.Nil(t, err)
+	defer file.Close()
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("upload_avatar", "sakurawb.jpg")
+	assert.Nil(t, err)
+
+	_, err = io.Copy(part, file)
+	assert.Nil(t, err)
+
+	err = writer.Close()
+	assert.Nil(t, err)
+
+	request := httptest.NewRequest(http.MethodPut, "/api/users/avatar/upload", body)
+	request.Header.Set("Content-Type", writer.FormDataContentType())
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.NotNil(t, responseBody.Data.ID)
+	assert.NotNil(t, responseBody.Data.Name)
+	assert.NotNil(t, responseBody.Data.Occupation)
+	assert.Equal(t, user.Email, responseBody.Data.Email)
+	assert.NotNil(t, responseBody.Data.Role)
+	assert.NotNil(t, responseBody.Data.CreatedAt)
+	assert.NotNil(t, responseBody.Data.UpdatedAt)
+	assert.NotNil(t, responseBody.Data.Avatar)
+}
+
+func TestUpdateAvatarNotValidFile(t *testing.T) {
+	file, err := os.Open("not_valid_img.pdf")
+	assert.Nil(t, err)
+	defer file.Close()
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("upload_avatar", "not_valid_img.pdf")
+	assert.Nil(t, err)
+
+	_, err = io.Copy(part, file)
+	assert.Nil(t, err)
+
+	err = writer.Close()
+	assert.Nil(t, err)
+
+	request := httptest.NewRequest(http.MethodPut, "/api/users/avatar/upload", body)
+	request.Header.Set("Content-Type", writer.FormDataContentType())
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+	assert.NotNil(t, responseBody.Errors)
+}
+
 func TestGetCurrentUser(t *testing.T) {
 	user := new(entity.User)
 	err := db.Where("email = ?", "iashiddiqi13@gmail.com").First(user).Error
@@ -169,29 +249,14 @@ func TestGetCurrentUserError(t *testing.T) {
 	assert.NotNil(t, responseBody.Errors)
 }
 
-func TestUpdateAvatar(t *testing.T) {
+func TestGetUser(t *testing.T) {
 	user := new(entity.User)
 	err := db.Where("email = ?", "iashiddiqi13@gmail.com").First(user).Error
 	assert.Nil(t, err)
 
-	// berikan file avatar.jpg pada folder test
-	file, err := os.Open("sakurawb.jpg")
-	assert.Nil(t, err)
-	defer file.Close()
-
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("upload_avatar", "sakurawb.jpg")
-	assert.Nil(t, err)
-
-	_, err = io.Copy(part, file)
-	assert.Nil(t, err)
-
-	err = writer.Close()
-	assert.Nil(t, err)
-
-	request := httptest.NewRequest(http.MethodPut, "/api/users/avatar/upload", body)
-	request.Header.Set("Content-Type", writer.FormDataContentType())
+	request := httptest.NewRequest(http.MethodGet, "/api/users/"+user.ID, nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
 	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
 
 	response, err := app.Test(request)
@@ -212,5 +277,115 @@ func TestUpdateAvatar(t *testing.T) {
 	assert.NotNil(t, responseBody.Data.Role)
 	assert.NotNil(t, responseBody.Data.CreatedAt)
 	assert.NotNil(t, responseBody.Data.UpdatedAt)
-	assert.NotNil(t, responseBody.Data.Avatar)
+}
+
+func TestGetUserError(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/users/invalid-uuid", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+	assert.NotNil(t, responseBody.Errors)
+}
+
+func TestSearchUser(t *testing.T) {
+	ClearAll()
+
+	CreateUsers(&entity.User{}, 20)
+
+	request := httptest.NewRequest(http.MethodGet, "/api/users", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[[]model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, 10, len(responseBody.Data))
+	assert.Equal(t, int64(21), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(3), responseBody.Paging.TotalPage)
+	assert.Equal(t, 1, responseBody.Paging.Page)
+	assert.Equal(t, 10, responseBody.Paging.Size)
+}
+
+func TestSearchUserWithPagination(t *testing.T) {
+	ClearAll()
+
+	CreateUsers(&entity.User{}, 20)
+
+	request := httptest.NewRequest(http.MethodGet, "/api/users?page=2&size=5", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[[]model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, 5, len(responseBody.Data))
+	assert.Equal(t, int64(21), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(5), responseBody.Paging.TotalPage)
+	assert.Equal(t, 2, responseBody.Paging.Page)
+	assert.Equal(t, 5, responseBody.Paging.Size)
+}
+
+func TestSearchUserWithFilter(t *testing.T) {
+	ClearAll()
+
+	CreateUsers(&entity.User{}, 20)
+
+	name := "Ichsan Ashiddiqi"
+	encodedName := url.QueryEscape(name)
+
+	request := httptest.NewRequest(http.MethodGet, "/api/users?name="+encodedName, nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[[]model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, 1, len(responseBody.Data))
+	assert.Equal(t, int64(1), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(1), responseBody.Paging.TotalPage)
+	assert.Equal(t, 1, responseBody.Paging.Page)
+	assert.Equal(t, 10, responseBody.Paging.Size)
+}
+
+func TestClearAll(t *testing.T) {
+	ClearAll()
 }
