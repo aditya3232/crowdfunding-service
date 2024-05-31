@@ -41,6 +41,10 @@ Ini adalah Layered Architecture kalau dilihat secara struktur partisinya
 
 ![Erd](erd.png)
 
+# Relational Schema
+
+![Relational Schema](relational_schema.png)
+
 ## Configuration
 
 Semua konfigurasi add di file `config.json`.

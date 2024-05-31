@@ -10,6 +10,6 @@ create table transactions
     created_at  datetime not null,
     updated_at  datetime,
     primary key (id),
-    foreign key fk_transactions_campaign_id (campaign_id) references campaigns (id),
-    foreign key fk_transactions_user_id (user_id) references users (id)
+    foreign key fk_transactions_campaign_id (campaign_id) references campaigns (id) on delete cascade on update restrict,
+    foreign key fk_transactions_user_id (user_id) references users (id) on delete cascade on update restrict
 ) engine=InnoDB;

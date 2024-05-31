@@ -7,5 +7,5 @@ create table campaign_images
     created_at  datetime not null,
     updated_at  datetime,
     primary key (id),
-    foreign key fk_campaign_images_campaign_id (campaign_id) references campaigns (id)
+    foreign key fk_campaign_images_campaign_id (campaign_id) references campaigns (id) on delete cascade on update restrict
 ) engine=InnoDB;

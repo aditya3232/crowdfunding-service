@@ -13,5 +13,5 @@ create table campaigns
     created_at          datetime not null,
     updated_at          datetime,
     primary key (id),
-    foreign key fk_campaigns_user_id (user_id) references users (id)
+    foreign key fk_campaigns_user_id (user_id) references users (id) on delete cascade on update restrict
 ) engine=InnoDB;

@@ -122,7 +122,7 @@ func TestRegisterDuplicate(t *testing.T) {
 
 func TestUpdateAvatar(t *testing.T) {
 	user := new(entity.User)
-	err := db.Where("email = ?", "iashiddiqi13@gmail.com").First(user).Error
+	err := db.Where("email = ?", "m.aditya3232@gmail.com").First(user).Error
 	assert.Nil(t, err)
 
 	file, err := os.Open("sakurawb.jpg")
@@ -199,9 +199,91 @@ func TestUpdateAvatarNotValidFile(t *testing.T) {
 	assert.NotNil(t, responseBody.Errors)
 }
 
+func TestUpdateUser(t *testing.T) {
+	ClearAll()
+	CreateUsers(&entity.User{}, 1)
+
+	user := new(entity.User)
+	err := db.Where("email = ?", "user0@gmail.com").First(user).Error
+	assert.Nil(t, err)
+
+	requestBody := model.UpdateUserRequest{
+		Name:       "User 1",
+		Occupation: "Programmer",
+		Email:      "user0@gmail.com",
+		Password:   "password",
+		Role:       "tes update",
+	}
+
+	jsonByte, err := json.Marshal(requestBody)
+	assert.Nil(t, err)
+
+	request := httptest.NewRequest(http.MethodPut, "/api/users/"+user.ID, strings.NewReader(string(jsonByte)))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.NotNil(t, responseBody.Data.ID)
+	assert.Equal(t, requestBody.Name, responseBody.Data.Name)
+	assert.Equal(t, requestBody.Occupation, responseBody.Data.Occupation)
+	assert.Equal(t, requestBody.Email, responseBody.Data.Email)
+	assert.Equal(t, requestBody.Role, responseBody.Data.Role)
+	assert.NotNil(t, responseBody.Data.CreatedAt)
+	assert.NotNil(t, responseBody.Data.UpdatedAt)
+
+}
+
+func TestUpdateUserError(t *testing.T) {
+	ClearAll()
+	CreateUsers(&entity.User{}, 1)
+
+	user := new(entity.User)
+	err := db.Where("email = ?", "user0@gmail.com").First(user).Error
+	assert.Nil(t, err)
+
+	requestBody := model.UpdateUserRequest{
+		Name:       "User 1",
+		Occupation: "Programmer",
+		Email:      "user0@gmail.com",
+		Role:       "tes update",
+	}
+
+	jsonByte, err := json.Marshal(requestBody)
+	assert.Nil(t, err)
+
+	request := httptest.NewRequest(http.MethodPut, "/api/users/"+user.ID, strings.NewReader(string(jsonByte)))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[model.UserResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
+	assert.NotNil(t, responseBody.Errors)
+}
+
 func TestGetCurrentUser(t *testing.T) {
 	user := new(entity.User)
-	err := db.Where("email = ?", "iashiddiqi13@gmail.com").First(user).Error
+	err := db.Where("email = ?", "m.aditya3232@gmail.com").First(user).Error
 	assert.Nil(t, err)
 
 	request := httptest.NewRequest(http.MethodGet, "/api/users/me", nil)
@@ -251,7 +333,7 @@ func TestGetCurrentUserError(t *testing.T) {
 
 func TestGetUser(t *testing.T) {
 	user := new(entity.User)
-	err := db.Where("email = ?", "iashiddiqi13@gmail.com").First(user).Error
+	err := db.Where("email = ?", "m.aditya3232@gmail.com").First(user).Error
 	assert.Nil(t, err)
 
 	request := httptest.NewRequest(http.MethodGet, "/api/users/"+user.ID, nil)
@@ -360,7 +442,7 @@ func TestSearchUserWithFilter(t *testing.T) {
 
 	CreateUsers(&entity.User{}, 20)
 
-	name := "Ichsan Ashiddiqi"
+	name := "Muhammad Aditya"
 	encodedName := url.QueryEscape(name)
 
 	request := httptest.NewRequest(http.MethodGet, "/api/users?name="+encodedName, nil)

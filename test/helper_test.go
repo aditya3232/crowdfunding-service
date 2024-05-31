@@ -2,7 +2,6 @@ package test
 
 import (
 	"crowdfunding-service/internal/entity"
-	"mime/multipart"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -16,19 +15,11 @@ import (
 
 func ClearAll() {
 	ClearUsers()
-}
-
-func IsImage(file *multipart.FileHeader) bool {
-	switch file.Header.Get("Content-Type") {
-	case "image/jpeg", "image/jpg", "image/png":
-		return true
-	default:
-		return false
-	}
+	ClearCampaigns()
 }
 
 func ClearUsers() {
-	err := db.Where("id is not null").Not("email = ?", "iashiddiqi13@gmail.com").Delete(&entity.User{}).Error
+	err := db.Where("id is not null").Not("email = ?", "m.aditya3232@gmail.com").Delete(&entity.User{}).Error
 	if err != nil {
 		log.Fatalf("Failed clear user data : %+v", err)
 	}
@@ -58,11 +49,37 @@ func CreateUsers(user *entity.User, total int) {
 	}
 }
 
-func GetFirstUser() *entity.User {
+func GetDefaultUser() *entity.User {
 	user := new(entity.User)
-	err := db.First(user).Error
+	err := db.Where("email = ?", "m.aditya3232@gmail.com").First(user).Error
 	if err != nil {
-		log.Fatalf("Failed to get first user : %+v", err)
+		log.Fatalf("Failed to get default user : %+v", err)
 	}
+
 	return user
+}
+
+func ClearCampaigns() {
+	err := db.Where("id is not null").Delete(&entity.Campaign{}).Error
+	if err != nil {
+		log.Fatalf("Failed clear campaign data : %+v", err)
+	}
+}
+
+func CreateCampaigns(campaign *entity.Campaign, total int) {
+	for i := 0; i < total; i++ {
+		campaign := &entity.Campaign{
+			ID:               uuid.NewString(),
+			Name:             "sebuah campaign yang sangat biasa " + strconv.Itoa(i),
+			ShortDescription: "sebuah deskripsi singkat biasa",
+			Description:      "penjelasan yang pendek",
+			GoalAmount:       10000000,
+			Perks:            "keuntungan satu, keuntungan dua, dan keuntungan  ketiga",
+			UserID:           GetDefaultUser().ID,
+		}
+		err := db.Create(campaign).Error
+		if err != nil {
+			log.Fatalf("Failed to create campaign : %+v", err)
+		}
+	}
 }
