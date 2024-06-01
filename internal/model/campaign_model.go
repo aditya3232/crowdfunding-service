@@ -31,6 +31,7 @@ type CreateCampaignRequest struct {
 
 type UpdateCampaignRequest struct {
 	ID               string `json:"-" validate:"required,max=100,uuid"`
+	UserID           string `json:"-" validate:"required,max=100,uuid"` // current user
 	Name             string `json:"name" validate:"required,max=255"`
 	ShortDescription string `json:"short_description" validate:"required,max=255"`
 	Description      string `json:"description" validate:"required"`

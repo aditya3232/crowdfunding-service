@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -64,7 +65,6 @@ func TestSearchCampaign(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/campaigns", nil)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
-	request.Header.Set("OAuth2-token", viperConfig.GetString("test.oauth2.google.accessToken"))
 
 	response, err := app.Test(request)
 	assert.Nil(t, err)
@@ -78,4 +78,102 @@ func TestSearchCampaign(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	assert.Equal(t, 10, len(responseBody.Data))
+	assert.Equal(t, int64(20), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(2), responseBody.Paging.TotalPage)
+	assert.Equal(t, 10, responseBody.Paging.Size)
+}
+
+func TestSearchCampaignWithPagination(t *testing.T) {
+	ClearAll()
+
+	CreateCampaigns(&entity.Campaign{}, 20)
+
+	request := httptest.NewRequest(http.MethodGet, "/api/campaigns?page=2&size=5", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[[]model.CampaignResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, 5, len(responseBody.Data))
+	assert.Equal(t, int64(20), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(4), responseBody.Paging.TotalPage)
+	assert.Equal(t, 2, responseBody.Paging.Page)
+	assert.Equal(t, 5, responseBody.Paging.Size)
+
+}
+
+func TestSearchCampaignWithFilter(t *testing.T) {
+	ClearAll()
+
+	CreateCampaigns(&entity.Campaign{}, 20)
+
+	campaignName := "sebuah campaign yang sangat biasa 0"
+	encodedCampaignName := url.QueryEscape(campaignName)
+
+	request := httptest.NewRequest(http.MethodGet, "/api/campaigns?campaign_name="+encodedCampaignName, nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[[]model.CampaignResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, 1, len(responseBody.Data))
+	assert.Equal(t, int64(1), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(1), responseBody.Paging.TotalPage)
+	assert.Equal(t, 10, responseBody.Paging.Size)
+}
+
+func TestGetCampaign(t *testing.T) {
+	ClearAll()
+
+	TestCreateCampaign(t)
+
+	campaign := new(entity.Campaign)
+	err := db.Where("name = ?", "sebuah campaign yang sangat biasa").First(campaign).Error
+	assert.Nil(t, err)
+
+	request := httptest.NewRequest(http.MethodGet, "/api/campaigns/"+campaign.ID, nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+
+	response, err := app.Test(request)
+	assert.Nil(t, err)
+
+	bytes, err := io.ReadAll(response.Body)
+	assert.Nil(t, err)
+
+	responseBody := new(model.WebResponse[model.CampaignResponse])
+	err = json.Unmarshal(bytes, responseBody)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, response.StatusCode)
+	assert.Equal(t, campaign.ID, responseBody.Data.ID)
+	assert.Equal(t, campaign.UserID, responseBody.Data.UserID)
+	assert.Equal(t, campaign.Name, responseBody.Data.Name)
+	assert.Equal(t, campaign.ShortDescription, responseBody.Data.ShortDescription)
+	assert.Equal(t, campaign.Description, responseBody.Data.Description)
+	assert.Equal(t, campaign.GoalAmount, responseBody.Data.GoalAmount)
+	assert.Equal(t, campaign.CurrentAmount, responseBody.Data.CurrentAmount)
+	assert.Equal(t, campaign.Perks, responseBody.Data.Perks)
+	assert.Equal(t, campaign.BackerCount, responseBody.Data.BackerCount)
+	assert.Equal(t, campaign.Slug, responseBody.Data.Slug)
+	assert.Equal(t, campaign.CreatedAt, responseBody.Data.CreatedAt)
+	assert.Equal(t, campaign.UpdatedAt, responseBody.Data.UpdatedAt)
 }

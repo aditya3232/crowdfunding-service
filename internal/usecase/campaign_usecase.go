@@ -97,11 +97,17 @@ func (u *CampaignUseCase) Update(ctx context.Context, request *model.UpdateCampa
 		return nil, fiber.ErrNotFound
 	}
 
-	// menampilkan response user
+	// pengecekan user id dari current user
 	user := new(entity.User)
-	if err := u.UserRepository.FindById(tx, user, campaign.UserID); err != nil {
-		u.Log.WithError(err).Error("error finding user")
+	if err := u.UserRepository.FindById(tx, user, request.UserID); err != nil {
+		u.Log.WithError(err).Error("error finding user by id")
 		return nil, fiber.ErrBadRequest
+	}
+
+	// pengecekan apakah current user adalah pemilik campaign
+	if campaign.UserID != request.UserID {
+		u.Log.Error("current user is not the owner of the campaign")
+		return nil, fiber.ErrForbidden
 	}
 
 	campaign.Name = request.Name

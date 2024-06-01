@@ -50,7 +50,7 @@ func (c *CampaignController) CreateCampaign(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.WebResponse[*model.CampaignResponse]{Data: response})
 }
 
-// list campaign by current user
+// list campaign
 func (c *CampaignController) List(ctx *fiber.Ctx) error {
 	request := &model.SearchCampaignRequest{
 		CampaignName: ctx.Query("campaign_name", ""),
@@ -98,6 +98,15 @@ func (c *CampaignController) Update(ctx *fiber.Ctx) error {
 	}
 
 	request.ID = ctx.Params("campaignId")
+
+	auth := middleware.GetUser(ctx)
+	responseGetUserByEmail, err := c.UserUseCase.GetByEmail(ctx.UserContext(), &model.GetUserByEmailRequest{Email: auth.Email})
+	if err != nil {
+		c.Log.WithError(err).Error("error getting user by email")
+		return err
+	}
+
+	request.UserID = responseGetUserByEmail.ID
 
 	response, err := c.UseCase.Update(ctx.UserContext(), request)
 	if err != nil {

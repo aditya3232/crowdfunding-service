@@ -52,6 +52,9 @@ func (c *RouteConfig) SetupGuestRoute() {
 	GuestGroup.Post("/google/revoke", c.Oauth2Controller.RevokeToken)
 	GuestGroup.Post("/google/refresh", c.Oauth2Controller.RefreshToken)
 
+	GuestGroup.Get("/campaigns", c.CampaignController.List)
+	GuestGroup.Get("/campaigns/:campaignId", c.CampaignController.Get)
+
 	// endpoint ini yg akan digunakan midtrans mengirim notification status pembayaran
 	// dipengaturan midtrans, meunuju ke settings, lalu payment, lalu edit notifcation URL
 	GuestGroup.Post("/transactions/notification", c.TransactionController.CreateTransactionNotification)
@@ -68,8 +71,6 @@ func (c *RouteConfig) SetupAuthRoute() {
 	AuthGroup.Get("/users/:userId", c.UserController.Get)
 
 	AuthGroup.Post("/campaigns", c.CampaignController.CreateCampaign)
-	AuthGroup.Get("/campaigns", c.CampaignController.List)
-	AuthGroup.Get("/campaigns/:campaignId", c.CampaignController.Get)
 	AuthGroup.Put("/campaigns/:campaignId", c.CampaignController.Update)
 	AuthGroup.Post("/campaigns/image/upload", c.CampaignImageController.Create)
 

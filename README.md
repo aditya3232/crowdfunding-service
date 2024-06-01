@@ -37,9 +37,9 @@ Ini adalah Layered Architecture kalau dilihat secara struktur partisinya
 - Go Oauth2 : https://pkg.go.dev/golang.org/x/oauth2#section-readme
 - Go Minio : https://pkg.go.dev/github.com/minio/minio-go/v7#section-readme
 
-# Erd
+# ER Diagram
 
-![Erd](erd.png)
+![ER Diagram](erd.png)
 
 # Relational Schema
 

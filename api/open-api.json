@@ -593,7 +593,7 @@
         }],
         "tags": ["Campaign API"],
         "summary": "Create campaign",
-        "description": "Create campaign",
+        "description": "Create campaign by user logged in",
         "requestBody": {
           "content": {
             "application/json": {
@@ -707,12 +707,9 @@
         }
       },
       "get": {
-        "security": [{
-          "OAuth2TokenAuth": []
-        }],
         "tags": ["Campaign API"],
         "summary": "List all campaign",
-        "description": "List all campaign",
+        "description": "List all campaign, and show campaignImages where is_primary is true",
         "parameters": [
           {
             "schema": {
@@ -863,9 +860,6 @@
     },
     "/campaigns/{campaignId}": {
       "get": {
-        "security": [{
-          "OAuth2TokenAuth": []
-        }],
         "tags": ["Campaign API"],
         "summary": "Get campaign by id",
         "description": "Get campaign by id",
@@ -970,7 +964,7 @@
         }],
         "tags": ["Campaign API"],
         "summary": "Update campaign by id",
-        "description": "Update campaign by id",
+        "description": "Update campaign by id, only the owner of the campaign can update the campaign",
         "parameters": [
           {
             "schema": {
@@ -1100,7 +1094,7 @@
         }],
         "tags": ["Campaign API"],
         "summary": "Upload image",
-        "description": "Upload the campaign image according to the campaign owner from the logged-in user",
+        "description": "Upload the campaign image, only the owner of the campaign can upload the image",
         "requestBody": {
           "content": {
             "multipart/form-data": {

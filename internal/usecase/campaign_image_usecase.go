@@ -77,7 +77,7 @@ func (u *CampaignImageUseCase) Create(ctx context.Context, request *model.Create
 
 	// pengecekan apakah user yg login adalah pemilik campaign
 	if campaign.UserID != request.UserID {
-		u.Log.Error("user is not the owner of the campaign")
+		u.Log.Error("current Wuser is not the owner of the campaign")
 		return nil, fiber.ErrForbidden
 	}
 
