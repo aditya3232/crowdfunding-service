@@ -1321,7 +1321,7 @@
         }],
         "tags": ["Transaction API"],
         "summary": "List all transaction by campaign id",
-        "description": "Retrieve all user transactions in the campaign, the user_id filter must be filled in",
+        "description": "List of transactions for the selected campaign based on campaign_id & user_id of the campaign owner",
         "parameters": [
           {
             "schema": {

@@ -82,6 +82,12 @@ migrate -database "mysql://root:root_password@tcp(localhost:3306)/crowdfunding_d
 go mod tidy
 ```
 
+### Run web server
+
+```bash
+go run cmd/web/main.go
+```
+
 ### Run unit test
 - Pertama, tambahkan data dan jalankan test untuk membuat 2 default user di CreateDefaultUser di file helper_test.go
 - Login ke salah satu akun untuk melakukan testing 
@@ -94,11 +100,4 @@ go mod tidy
 go test -v ./test/
 # jalankan test dengan nama tertentu
 go test -v -run TestCreateDefaultUser ./test/
-```
-
-
-### Run web server
-
-```bash
-go run cmd/web/main.go
 ```
