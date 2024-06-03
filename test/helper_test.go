@@ -137,3 +137,10 @@ func CreateCampaigns(campaign *entity.Campaign, total int) {
 		}
 	}
 }
+
+func ClearTransactions() {
+	err := db.Where("id is not null").Delete(&entity.Transaction{}).Error
+	if err != nil {
+		log.Fatalf("Failed clear transaction data : %+v", err)
+	}
+}

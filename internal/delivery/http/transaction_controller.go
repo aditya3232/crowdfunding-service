@@ -24,7 +24,7 @@ func NewTransactionController(useCase *usecase.TransactionUseCase, userUseCase *
 	}
 }
 
-// get transactions by campaign id
+// get transactions by campaign id (daftar transaksi pada campaign yg dipilih berdasarkan campaign_id & user_id pemilik campaign)
 func (c *TransactionController) GetTransactionsByCampaignID(ctx *fiber.Ctx) error {
 	request := &model.GetTransactionByCampaignIDRequest{
 		CampaignID: ctx.Params("campaignId"), // campaign_id diambil dari path parameter
@@ -52,7 +52,7 @@ func (c *TransactionController) GetTransactionsByCampaignID(ctx *fiber.Ctx) erro
 	})
 }
 
-// get transactions by user id
+// get transactions by user id (daftar transaksi yg dilakukan oleh user yg login)
 func (c *TransactionController) GetTransactionsByUserID(ctx *fiber.Ctx) error {
 	auth := middleware.GetUser(ctx)
 	responseGetUserByEmail, err := c.UserUseCase.GetByEmail(ctx.UserContext(), &model.GetUserByEmailRequest{Email: auth.Email})
@@ -62,7 +62,7 @@ func (c *TransactionController) GetTransactionsByUserID(ctx *fiber.Ctx) error {
 	}
 
 	request := &model.GetTransactionByUserIDRequest{
-		UserID: responseGetUserByEmail.ID, // user_id diambil dari user yg login
+		UserID: responseGetUserByEmail.ID,
 		Page:   ctx.QueryInt("page", 1),
 		Size:   ctx.QueryInt("size", 10),
 	}

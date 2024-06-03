@@ -1412,9 +1412,6 @@
     },
     "/transactions/notification": {
       "post": {
-        "security": [{
-          "OAuth2TokenAuth": []
-        }],
         "tags": ["Transaction API"],
         "summary": "Notification transaction",
         "description": "This endpoint will be used by Midtrans to send payment status notifications",
