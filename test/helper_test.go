@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 /*
@@ -18,8 +19,61 @@ func ClearAll() {
 	ClearCampaigns()
 }
 
+func CreateDefaultUser() {
+	password := "password"
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	if err != nil {
+		log.Fatalf("Failed to hash password: %+v", err)
+	}
+
+	user1 := &entity.User{
+		ID:           uuid.NewString(),
+		Name:         "Muhammad Aditya",
+		Occupation:   "Programmer",
+		Email:        "m.aditya3232@gmail.com",
+		PasswordHash: string(hashedPassword),
+		Role:         "admin",
+	}
+
+	user2 := &entity.User{
+		ID:           uuid.NewString(),
+		Name:         "Ichsan Ashiddiqi",
+		Occupation:   "Programmer",
+		Email:        "iashiddiqi13@gmail.com",
+		PasswordHash: string(hashedPassword),
+		Role:         "user",
+	}
+
+	existingUser1 := &entity.User{}
+	err = db.Where("email = ?", user1.Email).First(existingUser1).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = db.Create(user1).Error
+			if err != nil {
+				log.Fatalf("Failed to create user 1: %+v", err)
+			}
+		} else {
+			log.Fatalf("Failed to check existing user 1: %+v", err)
+		}
+	}
+
+	existingUser2 := &entity.User{}
+	err = db.Where("email = ?", user2.Email).First(existingUser2).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = db.Create(user2).Error
+			if err != nil {
+				log.Fatalf("Failed to create user 2: %+v", err)
+			}
+		} else {
+			log.Fatalf("Failed to check existing user 2: %+v", err)
+		}
+	}
+}
+
 func ClearUsers() {
-	err := db.Where("id is not null").Not("email = ?", "m.aditya3232@gmail.com").Delete(&entity.User{}).Error
+	err := db.Where("id is not null").Not("email = ? OR email = ?", "m.aditya3232@gmail.com", "iashiddiqi13@gmail.com").Delete(&entity.User{}).Error
 	if err != nil {
 		log.Fatalf("Failed clear user data : %+v", err)
 	}

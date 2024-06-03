@@ -17,6 +17,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCreateDefaultUser(t *testing.T) {
+	ClearAll()
+	CreateDefaultUser()
+}
+
 func TestRegister(t *testing.T) {
 	ClearAll()
 
@@ -89,6 +94,7 @@ func TestRegisterError(t *testing.T) {
 
 func TestRegisterDuplicate(t *testing.T) {
 	ClearAll()
+
 	TestRegister(t)
 
 	requestBody := model.RegisterUserRequest{
@@ -121,9 +127,7 @@ func TestRegisterDuplicate(t *testing.T) {
 }
 
 func TestUpdateAvatar(t *testing.T) {
-	user := new(entity.User)
-	err := db.Where("email = ?", "m.aditya3232@gmail.com").First(user).Error
-	assert.Nil(t, err)
+	ClearAll()
 
 	file, err := os.Open("sakurawb.jpg")
 	assert.Nil(t, err)
@@ -158,7 +162,7 @@ func TestUpdateAvatar(t *testing.T) {
 	assert.NotNil(t, responseBody.Data.ID)
 	assert.NotNil(t, responseBody.Data.Name)
 	assert.NotNil(t, responseBody.Data.Occupation)
-	assert.Equal(t, user.Email, responseBody.Data.Email)
+	assert.NotNil(t, responseBody.Data.Email)
 	assert.NotNil(t, responseBody.Data.Role)
 	assert.NotNil(t, responseBody.Data.CreatedAt)
 	assert.NotNil(t, responseBody.Data.UpdatedAt)
@@ -166,6 +170,8 @@ func TestUpdateAvatar(t *testing.T) {
 }
 
 func TestUpdateAvatarNotValidFile(t *testing.T) {
+	ClearAll()
+
 	file, err := os.Open("not_valid_img.pdf")
 	assert.Nil(t, err)
 	defer file.Close()
@@ -201,6 +207,7 @@ func TestUpdateAvatarNotValidFile(t *testing.T) {
 
 func TestUpdateUser(t *testing.T) {
 	ClearAll()
+
 	CreateUsers(&entity.User{}, 1)
 
 	user := new(entity.User)
@@ -246,6 +253,7 @@ func TestUpdateUser(t *testing.T) {
 
 func TestUpdateUserError(t *testing.T) {
 	ClearAll()
+
 	CreateUsers(&entity.User{}, 1)
 
 	user := new(entity.User)
@@ -282,9 +290,7 @@ func TestUpdateUserError(t *testing.T) {
 }
 
 func TestGetCurrentUser(t *testing.T) {
-	user := new(entity.User)
-	err := db.Where("email = ?", "m.aditya3232@gmail.com").First(user).Error
-	assert.Nil(t, err)
+	ClearAll()
 
 	request := httptest.NewRequest(http.MethodGet, "/api/users/me", nil)
 	request.Header.Set("Content-Type", "application/json")
@@ -305,13 +311,15 @@ func TestGetCurrentUser(t *testing.T) {
 	assert.NotNil(t, responseBody.Data.ID)
 	assert.NotNil(t, responseBody.Data.Name)
 	assert.NotNil(t, responseBody.Data.Occupation)
-	assert.Equal(t, user.Email, responseBody.Data.Email)
+	assert.NotNil(t, responseBody.Data.Email)
 	assert.NotNil(t, responseBody.Data.Role)
 	assert.NotNil(t, responseBody.Data.CreatedAt)
 	assert.NotNil(t, responseBody.Data.UpdatedAt)
 }
 
 func TestGetCurrentUserError(t *testing.T) {
+	ClearAll()
+
 	request := httptest.NewRequest(http.MethodGet, "/api/users/me", nil)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
@@ -332,8 +340,12 @@ func TestGetCurrentUserError(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
+	ClearAll()
+
+	TestRegister(t)
+
 	user := new(entity.User)
-	err := db.Where("email = ?", "m.aditya3232@gmail.com").First(user).Error
+	err := db.Where("email = ?", "user1@gmail.com").First(user).Error
 	assert.Nil(t, err)
 
 	request := httptest.NewRequest(http.MethodGet, "/api/users/"+user.ID, nil)
@@ -362,6 +374,8 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestGetUserError(t *testing.T) {
+	ClearAll()
+
 	request := httptest.NewRequest(http.MethodGet, "/api/users/invalid-uuid", nil)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
@@ -403,7 +417,7 @@ func TestSearchUser(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	assert.Equal(t, 10, len(responseBody.Data))
-	assert.Equal(t, int64(21), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(22), responseBody.Paging.TotalItem)
 	assert.Equal(t, int64(3), responseBody.Paging.TotalPage)
 	assert.Equal(t, 1, responseBody.Paging.Page)
 	assert.Equal(t, 10, responseBody.Paging.Size)
@@ -431,7 +445,7 @@ func TestSearchUserWithPagination(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, response.StatusCode)
 	assert.Equal(t, 5, len(responseBody.Data))
-	assert.Equal(t, int64(21), responseBody.Paging.TotalItem)
+	assert.Equal(t, int64(22), responseBody.Paging.TotalItem)
 	assert.Equal(t, int64(5), responseBody.Paging.TotalPage)
 	assert.Equal(t, 2, responseBody.Paging.Page)
 	assert.Equal(t, 5, responseBody.Paging.Size)
@@ -466,8 +480,4 @@ func TestSearchUserWithFilter(t *testing.T) {
 	assert.Equal(t, int64(1), responseBody.Paging.TotalPage)
 	assert.Equal(t, 1, responseBody.Paging.Page)
 	assert.Equal(t, 10, responseBody.Paging.Size)
-}
-
-func TestClearAll(t *testing.T) {
-	ClearAll()
 }

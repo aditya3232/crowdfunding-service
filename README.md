@@ -83,10 +83,16 @@ go mod tidy
 ```
 
 ### Run unit test
+- Pertama, tambahkan data dan jalankan test untuk membuat 2 default user di TestCreateDefaultUser
+- Login ke salah satu akun untuk melakukan testing 
+- Lalu tambahkan access token ke dalam file config.json di data test
+- Access token hanya bertahan selama 1 jam, jadi lakukan refresh token jika sudah expired
+- setelah itu jalankan keseluruhan test dengan perintah berikut
 
 ```bash
 go test -v ./test/
 ```
+
 
 ### Run web server
 
