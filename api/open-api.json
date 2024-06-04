@@ -801,6 +801,32 @@
                           "updated_at": {
                             "type": "string"
                           },
+                          "campaign_images": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "campaign_id": {
+                                  "type": "string"
+                                },
+                                "file_name": {
+                                  "type": "string"
+                                },
+                                "is_primary": {
+                                  "type": "integer"
+                                },
+                                "created_at": {
+                                  "type": "string"
+                                },
+                                "updated_at": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
                           "user": {
                             "type": "object",
                             "properties": {
@@ -919,6 +945,32 @@
                         },
                         "updated_at": {
                           "type": "string"
+                        },
+                        "campaign_images": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "campaign_id": {
+                                "type": "string"
+                              },
+                              "file_name": {
+                                "type": "string"
+                              },
+                              "is_primary": {
+                                "type": "integer"
+                              },
+                              "created_at": {
+                                "type": "string"
+                              },
+                              "updated_at": {
+                                "type": "string"
+                              }
+                            }
+                          }
                         },
                         "user": {
                           "type": "object",
